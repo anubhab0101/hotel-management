@@ -2,7 +2,6 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
 export async function login(formData: FormData) {
@@ -21,5 +20,12 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
+  
+  // Route Super Admin directly to the Super Admin dashboard
+  if (email === 'admin@lumistay.com' || email === 'superadmin@hotel.com') {
+    redirect('/superadmin')
+  }
+
+  // Everyone else goes to their hotel admin dashboard
   redirect('/admin')
 }
