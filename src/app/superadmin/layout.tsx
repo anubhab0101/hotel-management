@@ -19,10 +19,13 @@ export default async function SuperAdminLayout({
   // Basic check for super admin email for now
   if (user.email !== 'admin@lumistay.com' && user.email !== 'superadmin@hotel.com') {
     // Optionally check staff_profiles role if needed
-    const { data } = await supabase.from('staff_profiles').select('role').eq('id', user.id).single();
-    if (!data || data.role !== 'super_admin') {
+    const { data } = await supabase.from('staff_profiles').select('role, hotel_id').eq('id', user.id).single();
+    
+    // If they HAVE a profile and a hotel but ARE NOT super_admin, boot them to /admin
+    if (data && data.hotel_id && data.role !== 'super_admin') {
       redirect('/admin');
     }
+    // If they don't have a profile yet, we let them in because they are the platform owner setting it up.
   }
 
   return (
